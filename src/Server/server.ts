@@ -28,6 +28,9 @@ export default class Server {
         this.app.get('*', function(req, res){
             res.status(404).json({message: "Not Found!"});
         });
+        this.app.post('*', function(req, res){
+            res.status(404).json({message: "Not Found!"});
+        });
     }
 
     ConfigHeaders(){
