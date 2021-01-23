@@ -24,6 +24,10 @@ export default class Server {
 
     Routes(){
         this.app.use('/typeahead', typeaheadRouter);
+
+        this.app.get('*', function(req, res){
+            res.status(404).json({message: "Not Found!"});
+        });
     }
 
     ConfigHeaders(){
