@@ -4,7 +4,7 @@
   "description": "Prueba tecnica para vacante como desarrollador Backend NodeJS",
   "main": "dist/index.js",
   "scripts": {
-    "start": "tsc && node dist/index.js",
+    "start": "tsc && cp ./src/names.json ./dist/names.json && node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
