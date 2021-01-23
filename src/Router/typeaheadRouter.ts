@@ -39,7 +39,8 @@ router.get('/:prefix', async function (req, res) {
 router.post('/', async function (req, res) {
     const data = await req.body.name;
     if (data == undefined) return res.status(400).json({ error: "name field is required" })
-
+    console.log(names[data]);
+    
     if (names[data]) {
         names[data]++;
         writeFile(names);
@@ -51,7 +52,7 @@ router.post('/', async function (req, res) {
 })
 
 
-async function readFile() {
+function readFile() {
     let names = {};
     let rawdata = fs.readFileSync(`${__dirname.replace('Router', '')}names.json`, "utf8");
     names = JSON.parse(rawdata);
