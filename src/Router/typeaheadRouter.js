@@ -6,34 +6,47 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname);
 let names = readFile();
 let prefix = '';
 let router = express.Router();
-router.get('/:prefix', async function (req, res) {
-    prefix = req.params.prefix;
+router.get('/:prefix?', async function (req, res) {
+    const limit = process.env.SUGGESTION_NUMBER;
+    prefix = req.params.prefix == undefined ? '' : req.params.prefix;
     let trie = new TrieSearch('name');
     trie.addFromObject(names);
-    let words = trie.get(prefix);
-    
     let names_filter = [];
-    words.forEach(function (word) {
-        let name_word = capitalize(word._key_);
-        names_filter.push({
-            name: name_word,
-            times: word.value
-        });
-    });
-    let aux_prefix;
 
+
+    if(prefix == ''){
+        const keys = Object.keys(names);
+        keys.forEach(function (word){
+            names_filter.push({
+                name: word,
+                times: names[word]
+            });
+        });
+    }else{
+        let words = trie.get(prefix);
+        words.forEach(function (word) {
+            let name_word = capitalize(word._key_);
+            names_filter.push({
+                name: name_word,
+                times: word.value
+            });
+        });
+    }
+    
+    
+    let aux_prefix;
+    
     if (names[capitalize(prefix)]) {
         aux_prefix = names_filter.splice(0, 1);
     }
-
+    
     names_filter.sort(comparation);
-    const limit = process.env.SUGGESTION_NUMBER;
     if (aux_prefix) {
         names_filter.unshift(aux_prefix[0]);
     }
     names_filter.splice(limit, names_filter.length - limit);
     return res.status(200).json(names_filter);
-
+    
 })
 
 router.post('/', async function (req, res) {
