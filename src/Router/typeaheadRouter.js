@@ -1,44 +1,45 @@
 import express from 'express';
-import { Trie } from 'prefix-trie-ts';
+import TrieSearch from 'trie-search';
 import fs from 'fs';
-let names: any = readFile();
+import path from 'path';
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+let names = readFile();
 let prefix = '';
 let router = express.Router();
 router.get('/:prefix', async function (req, res) {
     prefix = req.params.prefix;
-    const trie = new Trie(Object.keys(names));
-    let words = trie.getPrefix(prefix);
-
-    let names_filter: any[] = [];
+    let trie = new TrieSearch('name');
+    trie.addFromObject(names);
+    let words = trie.get(prefix);
+    
+    let names_filter = [];
     words.forEach(function (word) {
-        word = capitalize(word);
+        let name_word = capitalize(word._key_);
         names_filter.push({
-            name: word,
-            times: names[word]
+            name: name_word,
+            times: word.value
         });
     });
     let aux_prefix;
-    
+
     if (names[capitalize(prefix)]) {
         aux_prefix = names_filter.splice(0, 1);
     }
-    
+
     names_filter.sort(comparation);
-    const limit:any = process.env.SUGGESTION_NUMBER;
+    const limit = process.env.SUGGESTION_NUMBER;
     if (aux_prefix) {
         names_filter.unshift(aux_prefix[0]);
     }
-    names_filter.splice(limit,names_filter.length-limit);
+    names_filter.splice(limit, names_filter.length - limit);
     return res.status(200).json(names_filter);
-
-
 
 })
 
 router.post('/', async function (req, res) {
-    const data = await req.body.name;
+    const data = capitalize(await req.body.name);
     if (data == undefined) return res.status(400).json({ error: "name field is required" })
-    
+
     if (names[data]) {
         names[data]++;
         writeFile(names);
@@ -52,20 +53,21 @@ router.post('/', async function (req, res) {
 
 function readFile() {
     let names = {};
+    
     let rawdata = fs.readFileSync(`${__dirname.replace('Router', '')}names.json`, "utf8");
     names = JSON.parse(rawdata);
     return names;
 }
-async function writeFile(names: any) {
+async function writeFile(names) {
     const new_json = JSON.stringify(names);
     fs.writeFileSync(`${__dirname.replace('Router', '')}names.json`, new_json);
 }
 
-function capitalize(data: string) {
+function capitalize(data) {
     return data.replace(/\b(\w)/g, s => s.toUpperCase());
 }
 
-function comparation(a: any, b: any) {
+function comparation(a, b) {
     const timeA = a.times;
     const timeB = b.times;
     let comparison = 0;
@@ -73,7 +75,7 @@ function comparation(a: any, b: any) {
         comparison = 1;
     } else if (timeA > timeB) {
         comparison = -1;
-    }else if (timeA == timeB){
+    } else if (timeA == timeB) {
         return a.name.localeCompare(b.name);
     }
     return comparison;

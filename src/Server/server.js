@@ -1,10 +1,10 @@
 import express  from 'express';
-import * as dotenv from 'dotenv';
-import * as bodyParser from 'body-parser';
-import {typeaheadRouter} from '../Router';
+import dotenv from 'dotenv';
+import bodyParser from 'body-parser';
+import * as Router from "../Router/index.js";
 export default class Server {
-    public app: express.Application;
-    public port: any;
+    app;
+    port;
     constructor() {
         dotenv.config();
         this.app = express();
@@ -16,14 +16,14 @@ export default class Server {
         return new Server();
     }
 
-    start(callback: Function){
+    start(callback){
         this.app.listen(this.port,callback());
         this.ConfigHeaders()
         this.Routes();
     }
 
     Routes(){
-        this.app.use('/typeahead', typeaheadRouter);
+        this.app.use('/typeahead', Router.typeaheadRouter);
 
         this.app.get('*', function(req, res){
             res.status(404).json({message: "Not Found!"});

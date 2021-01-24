@@ -1,4 +1,4 @@
-import Server from './Server/server';
+import Server from './Server/server.js';
 
 
 const server = Server.init();
