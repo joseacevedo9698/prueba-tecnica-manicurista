@@ -4,7 +4,7 @@ ordenado por popularidad.
 
 ## Endpoints 🚀
 El sistema contiene dos enpoints:
-* GET: /typeahead/{prefix}
+## GET: /typeahead/{prefix}
 _Recibe un prefijo en la ruta y devuelve un array de objetos, cada uno de los cuales tiene los
 atributos name y times. El resultado contiene todos los nombres que tienen el prefijo dado,
 hasta un máximo de nombres correspondiente al límite SUGGESTION_NUMBER, ordenados por
@@ -20,7 +20,7 @@ name":"Janeczka","times":915},{"name":"Jaquelin","times":889},{"name":"
 Janaya","times":878}]
 ```
 
-* POST: /typeahead
+## POST: /typeahead:
 _Recibe un objeto JSON con un nombre como cuerpo de la solicitud (ejemplo: {"name":"
 Joanna"}), aumenta la popularidad de ese nombre en 1 y devuelve un objeto con las
 propiedades name y times considerando el nuevo estado. Si el nombre de pila no existe en los datos (names.json), entonces
